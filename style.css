@@ -30,6 +30,29 @@ header {
 header h1 { margin: 0; font-size: 26px; }
 .tagline { color: var(--muted); margin: 6px 0 0; }
 
+.nav {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.nav a {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+
+.nav a.active {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
 main {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -208,3 +231,73 @@ details dd {
 
 .chip.pro { color: var(--great); border-color: rgba(63, 185, 80, 0.4); }
 .chip.con { color: #f85149; border-color: rgba(248, 81, 73, 0.4); }
+
+/* Explore page: property sheet */
+.detail-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.detail-head h2 { margin: 0; font-size: 20px; }
+
+.tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.tag.sql { color: var(--accent); border: 1px solid rgba(68, 147, 248, 0.5); }
+.tag.nosql { color: var(--ok); border: 1px solid rgba(210, 153, 34, 0.5); }
+
+.detail-summary {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.prop {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.prop:last-child { border-bottom: none; }
+
+.prop-key {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.prop-val { font-size: 14px; color: var(--text); }
+
+.prop-list { margin: 0; padding-left: 18px; }
+.prop-list li { margin: 2px 0; font-size: 13.5px; }
+
+.rw {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.rw-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--good);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.rw-fill {
+  height: 100%;
+  background: var(--ok);
+}
+.rw-label { font-size: 13px; color: var(--text); margin-top: 6px; }
+
+@media (max-width: 520px) {
+  .prop { grid-template-columns: 1fr; gap: 4px; }
+}
