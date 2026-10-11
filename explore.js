@@ -78,7 +78,23 @@ function renderDb(db) {
     row("Consistency", EXPLAIN.consistency[db.consistency]) +
     row("Scaling", EXPLAIN.scaling[db.scaling]) +
     row("Deployment option(s)", list(db.deployment, EXPLAIN.deployment)) +
-    row("SQL interface", db.sql ? "Yes" : "No");
+    row("SQL interface", db.sql ? "Yes" : "No") +
+    row("License", db.license) +
+    row("First released", String(db.released) + " (" + (new Date().getFullYear() - db.released) + " years ago)") +
+    row("Popularity", db.popularity) +
+    row("Managed / availability", db.clouds.join(", ")) +
+    row("Key trade-off", '<span class="tradeoff-inline">' + db.tradeoff + '</span>');
+}
+
+function selectAndRender(name) {
+  const sel = document.getElementById("dbPicker");
+  const db = window.DB_CATALOG.find(function (d) { return d.name === name; });
+  if (db) {
+    sel.value = name;
+    renderDb(db);
+    return true;
+  }
+  return false;
 }
 
 function populateSelect() {
@@ -100,7 +116,12 @@ function populateSelect() {
 
 document.addEventListener("DOMContentLoaded", function () {
   populateSelect();
-  renderDb(window.DB_CATALOG.slice().sort(function (a, b) {
+  const sorted = window.DB_CATALOG.slice().sort(function (a, b) {
     return a.name.localeCompare(b.name);
-  })[0]);
+  });
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get("db");
+  if (!requested || !selectAndRender(requested)) {
+    renderDb(sorted[0]);
+  }
 });

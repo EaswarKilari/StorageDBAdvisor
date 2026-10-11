@@ -157,12 +157,18 @@ function render(results) {
     card.innerHTML =
       '<div class="card-head">' +
         '<span class="rank">#' + (i + 1) + '</span>' +
-        '<span class="name">' + db.name + '</span>' +
+        '<a class="name" href="explore.html?db=' + encodeURIComponent(db.name) + '" title="View full properties of ' + db.name + '">' + db.name + '</a>' +
         '<span class="pct ' + tier + '">' + r.pct + '%</span>' +
       '</div>' +
       '<div class="bar"><div class="bar-fill ' + tier + '" style="width:' + r.pct + '%"></div></div>' +
       '<div class="struct">' + db.structure + '</div>' +
-      '<div class="summary">' + db.summary + '</div>';
+      '<div class="summary">' + db.summary + '</div>' +
+      '<div class="meta">' +
+        '<span class="meta-item">' + db.license + '</span>' +
+        '<span class="meta-item">Since ' + db.released + '</span>' +
+        '<span class="meta-item">Popularity: ' + db.popularity + '</span>' +
+      '</div>' +
+      '<div class="tradeoff"><strong>Trade-off:</strong> ' + db.tradeoff + '</div>';
 
     const reasons = document.createElement("div");
     reasons.className = "reasons";
