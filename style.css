@@ -1,0 +1,210 @@
+:root {
+  --bg: #0f1419;
+  --panel: #1a222c;
+  --border: #2a3542;
+  --text: #e6edf3;
+  --muted: #8b98a5;
+  --accent: #4493f8;
+  --great: #3fb950;
+  --good: #4493f8;
+  --ok: #d29922;
+  --weak: #6e7681;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+header {
+  padding: 28px 24px 8px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+header h1 { margin: 0; font-size: 26px; }
+.tagline { color: var(--muted); margin: 6px 0 0; }
+
+main {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  max-width: 1040px;
+  margin: 16px auto 48px;
+  padding: 0 24px;
+}
+
+@media (max-width: 760px) {
+  main { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.knobs h2, #results h2 { margin: 0 0 14px; font-size: 16px; }
+
+.intro {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0 0 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.field {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.field:last-of-type { border-bottom: none; }
+
+.knobs label {
+  display: block;
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+  margin: 0 0 3px;
+}
+
+.hint {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.knobs label.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+
+.knobs select {
+  width: 100%;
+  padding: 8px 10px;
+  background: #0d1117;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+details {
+  margin-top: 8px;
+}
+
+details summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--accent);
+  list-style: none;
+  user-select: none;
+}
+
+details summary::-webkit-details-marker { display: none; }
+details summary::before { content: "\25b8  "; }
+details[open] summary::before { content: "\25be  "; }
+
+details dl {
+  margin: 8px 0 2px;
+  padding: 10px 12px;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+details dt {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 8px;
+}
+details dt:first-child { margin-top: 0; }
+
+details dd {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+#recommend {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#recommend:hover { background: #3a82e0; }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: #0d1117;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rank { color: var(--muted); font-size: 13px; }
+.name { font-weight: 600; font-size: 16px; flex: 1; }
+
+.pct { font-weight: 700; font-size: 16px; }
+.pct.great { color: var(--great); }
+.pct.good { color: var(--good); }
+.pct.ok { color: var(--ok); }
+.pct.weak { color: var(--weak); }
+
+.bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.bar-fill { height: 100%; border-radius: 4px; }
+.bar-fill.great { background: var(--great); }
+.bar-fill.good { background: var(--good); }
+.bar-fill.ok { background: var(--ok); }
+.bar-fill.weak { background: var(--weak); }
+
+.struct { font-size: 12px; color: var(--accent); margin-top: 2px; }
+.summary { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.chip {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.chip.pro { color: var(--great); border-color: rgba(63, 185, 80, 0.4); }
+.chip.con { color: #f85149; border-color: rgba(248, 81, 73, 0.4); }

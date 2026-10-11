@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find the Right Database</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Find the Right Database</h1>
+    <p class="tagline">Tweak a few knobs and get real-world databases ranked by how well they match your needs.</p>
+  </header>
+
+  <main>
+    <section class="panel knobs">
+      <h2>Your requirements</h2>
+      <p class="intro">Not sure what an option means? Click <em>"What do these mean?"</em> under each question for a plain-language explanation.</p>
+
+      <div class="field">
+        <label for="workload">Primary workload</label>
+        <p class="hint">What is the main job this database has to do day to day?</p>
+        <select id="workload">
+          <option value="oltp">Transactional app (OLTP)</option>
+          <option value="olap">Analytics / reporting (OLAP)</option>
+          <option value="htap">Mixed transactional + analytical (HTAP)</option>
+          <option value="cache">Caching / sessions</option>
+          <option value="search">Full-text search</option>
+          <option value="timeseries">Time-series / metrics</option>
+          <option value="kv-scale">Key-value at scale</option>
+          <option value="graph">Connected data / graph</option>
+          <option value="vector">Vector / similarity search (AI)</option>
+        </select>
+        <details>
+          <summary>What do these mean?</summary>
+          <dl>
+            <dt>Transactional app (OLTP)</dt><dd>Lots of small reads and writes from an application — sign-ups, orders, profile updates. The everyday "backend database" case.</dd>
+            <dt>Analytics / reporting (OLAP)</dt><dd>Scanning and aggregating huge numbers of rows for dashboards and reports (sums, averages, trends) rather than touching single records.</dd>
+            <dt>Mixed (HTAP)</dt><dd>You need both at once: live transactions <em>and</em> analytics on the same data without copying it elsewhere.</dd>
+            <dt>Caching / sessions</dt><dd>Temporary, fast-access data (logged-in sessions, hot results) that can be rebuilt if lost.</dd>
+            <dt>Full-text search</dt><dd>Searching text by keywords and relevance, like a site search box or log search.</dd>
+            <dt>Time-series / metrics</dt><dd>Timestamped data arriving continuously — server metrics, IoT sensors, stock ticks.</dd>
+            <dt>Key-value at scale</dt><dd>Simple "look up a value by its key" access, but at very high volume across many machines.</dd>
+            <dt>Connected data / graph</dt><dd>Data that is mostly about relationships — social networks, recommendations, fraud rings — where you traverse links.</dd>
+            <dt>Vector / similarity search</dt><dd>Finding "nearest" items by meaning using AI embeddings — semantic search, recommendations, RAG for LLMs.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="field">
+        <label for="dataModel">Data model</label>
+        <p class="hint">How do you want your data shaped and organized?</p>
+        <select id="dataModel">
+          <option value="any">No preference</option>
+          <option value="relational">Relational (tables)</option>
+          <option value="document">Document (JSON-like)</option>
+          <option value="keyvalue">Key-value</option>
+          <option value="widecolumn">Wide-column</option>
+          <option value="columnar">Columnar</option>
+          <option value="timeseries">Time-series</option>
+          <option value="graph">Graph (nodes &amp; edges)</option>
+          <option value="vector">Vector (embeddings)</option>
+        </select>
+        <details>
+          <summary>What do these mean?</summary>
+          <dl>
+            <dt>No preference</dt><dd>Let the match decide; don't filter by data shape.</dd>
+            <dt>Relational (tables)</dt><dd>Rows and columns with a fixed schema and relationships — classic spreadsheets/SQL tables.</dd>
+            <dt>Document (JSON-like)</dt><dd>Flexible, nested records (like JSON). Each record can differ; great for evolving schemas.</dd>
+            <dt>Key-value</dt><dd>The simplest model: a key maps to a blob/value. Extremely fast, minimal structure.</dd>
+            <dt>Wide-column</dt><dd>Rows that can have millions of dynamic columns, grouped into families; good for huge sparse datasets.</dd>
+            <dt>Columnar</dt><dd>Stores each column together on disk so analytics scans read only the columns they need, with strong compression.</dd>
+            <dt>Time-series</dt><dd>Specialized for timestamped points, with time-based partitioning and retention built in.</dd>
+            <dt>Graph (nodes &amp; edges)</dt><dd>Data stored as nodes connected by relationships; ideal for traversing networks of links.</dd>
+            <dt>Vector (embeddings)</dt><dd>Stores numeric vectors (AI embeddings) and finds the most similar ones quickly.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="field">
+        <label for="rw">Read vs write balance</label>
+        <p class="hint">Will your system mostly read existing data, mostly write new data, or both evenly?</p>
+        <select id="rw">
+          <option value="0">Read-heavy</option>
+          <option value="0.5" selected>Balanced</option>
+          <option value="1">Write-heavy</option>
+        </select>
+        <details>
+          <summary>What do these mean?</summary>
+          <dl>
+            <dt>Read-heavy</dt><dd>Most operations fetch data that already exists (e.g., a content site read far more than it's updated). Favors read-optimized engines like B-trees.</dd>
+            <dt>Balanced</dt><dd>A roughly even mix of reads and writes — typical for many apps.</dd>
+            <dt>Write-heavy</dt><dd>You ingest large volumes of new data constantly (logs, events, sensors). Favors write-optimized engines like LSM-trees.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="field">
+        <label for="consistency">Consistency requirement</label>
+        <p class="hint">How strict must the database be about everyone always seeing the latest, correct data?</p>
+        <select id="consistency">
+          <option value="strong">Strict ACID transactions</option>
+          <option value="tunable">Tunable is fine</option>
+          <option value="eventual">Eventual consistency is OK</option>
+        </select>
+        <details>
+          <summary>What do these mean?</summary>
+          <dl>
+            <dt>Strict ACID transactions</dt><dd>Guarantees that multi-step changes fully succeed or fully fail, and reads always see committed, correct data. Essential for money, inventory, bookings.</dd>
+            <dt>Tunable is fine</dt><dd>You can trade some strictness for speed/availability on a per-operation basis (e.g., require a majority of replicas to agree).</dd>
+            <dt>Eventual consistency is OK</dt><dd>Replicas may briefly disagree and "catch up" shortly after. Fine for likes, view counts, caches where a small delay is harmless.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="field">
+        <label for="scale">Scale</label>
+        <p class="hint">Can one server hold your data and traffic, or do you need to spread across many machines?</p>
+        <select id="scale">
+          <option value="single">Single node is fine</option>
+          <option value="distributed">Needs horizontal scale</option>
+        </select>
+        <details>
+          <summary>What do these mean?</summary>
+          <dl>
+            <dt>Single node is fine</dt><dd>One machine (plus maybe a backup replica) can comfortably handle your data size and load. Simpler to run.</dd>
+            <dt>Needs horizontal scale</dt><dd>Data/traffic is too big for one machine, so it must shard/replicate across a cluster and grow by adding nodes.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="field">
+        <label for="deployment">Deployment</label>
+        <p class="hint">Where and how do you want to run the database?</p>
+        <select id="deployment">
+          <option value="any">No preference</option>
+          <option value="embedded">Embedded / in-process</option>
+          <option value="self-hosted">Self-hosted server</option>
+          <option value="managed">Managed cloud service</option>
+        </select>
+        <details>
+          <summary>What do these mean?</summary>
+          <dl>
+            <dt>No preference</dt><dd>Don't filter by how it's run.</dd>
+            <dt>Embedded / in-process</dt><dd>The database runs <em>inside</em> your application as a library — no separate server to install (e.g., SQLite, DuckDB). Great for apps, devices, and local tools.</dd>
+            <dt>Self-hosted server</dt><dd>You install and operate the database on your own machines/VMs/containers. Full control, but you handle backups, upgrades, and scaling.</dd>
+            <dt>Managed cloud service</dt><dd>A cloud provider runs it for you (e.g., DynamoDB, Snowflake). Less operational work; you pay for convenience and lose some low-level control.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="field">
+        <label class="check">
+          <input type="checkbox" id="sql" />
+          Must support SQL
+        </label>
+        <p class="hint">Tick this if your team needs to query with SQL (the standard query language) or integrate with SQL-based BI tools.</p>
+      </div>
+
+      <button id="recommend">Recommend databases</button>
+    </section>
+
+    <section class="panel" id="results"></section>
+  </main>
+
+  <script src="catalog.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
