@@ -1,143 +1,72 @@
-# DBAdvisor
+# StorageDBAdvisor
 
-A lightweight, no-build web tool that helps you **choose the right database** for a
-project. Tweak a few knobs describing your requirements and get real-world databases
-**ranked by how well they match**, each with a match score, trade-off note, and a full
-property sheet.
+Picking a database is one of those decisions that's easy to get wrong and hard to undo. I built this little tool to make the choice less overwhelming: you answer a handful of questions about what you're building, and it ranks real databases by how well they fit, explains why, and shows the trade-offs you'd be signing up for.
 
-> Built as a decision-support tool on top of a structured catalog of 40 real-world
-> databases and the storage-engine concepts that define them.
+It's plain HTML, CSS and JavaScript. No framework, no build step, nothing to install.
 
----
+**Live site:** https://easwarkilari.github.io/StorageDBAdvisor/
 
-## Features
+## What it does
 
-- **Recommender** (`index.html`) — pick your workload, data model, read/write balance,
-  consistency, scale, deployment, and SQL need; get a ranked list with a percentage
-  match, pros/cons, a one-line **trade-off**, and license/maturity/popularity metadata.
-- **Explorer** (`explore.html`) — select any of the 40 databases to view a full
-  property sheet: storage structure, best-fit workloads, data model(s), read/write
-  profile, consistency, scaling, deployment options, SQL support, license, release
-  year, popularity, cloud availability, and the key trade-off.
-- **Database → storage engine → final product** — for *pluggable* databases
-  (MySQL, MariaDB, MongoDB, SQL Server), the recommender picks the best **storage
-  engine** for your workload (e.g., write-heavy → MyRocks) and shows the full
-  breakdown: the database, the chosen engine and why, and the final product
-  (e.g., "MySQL with the MyRocks engine"). Non-pluggable databases are shown with
-  their built-in, fixed engine.
-- **Clickable results** — each recommended database links straight to its property
-  sheet in the Explorer.
-- **Plain-language explanations** — every question and option has a "What do these
-  mean?" expander so non-experts can answer confidently.
+There are two pages.
 
----
+The **recommender** (`index.html`) is the main one. You set a few knobs: the kind of workload, data model, whether you read or write more, how strict you need consistency to be, how far it has to scale, how you want to run it, and whether SQL is a must. It scores all 40 databases against your answers and gives you a ranked list. Each result tells you how well it matched, what's good and bad about it for your case, a one-line trade-off, and some basics like the license and how long it's been around.
 
-## Storage engine vs. database
+If you're not sure what a question means, every one of them has a "What do these mean?" toggle that explains the options in plain English. I added that because terms like "eventual consistency" or "embedded deployment" aren't obvious if you haven't run into them before.
 
-This project distinguishes between two layers:
+The **explorer** (`explore.html`) is for when you just want to look up a single database and see everything about it on one page. Pick one from the list and you get its storage structure, the workloads it's good at, consistency and scaling behaviour, deployment options, license, release year, and so on.
 
-| Layer | Role | Examples |
-|---|---|---|
-| **Database (DBMS)** | The full product: client connections, query language/parser, planner, security, and storage | PostgreSQL, MySQL, MongoDB |
-| **Storage engine** | *How* data is physically stored, indexed, cached, and made durable | InnoDB, WiredTiger, RocksDB |
+The two pages are linked. Click a database name in the recommender results and it jumps straight to that database's page in the explorer.
 
-The catalog lists **databases**; the `structure` field shown for each describes its
-**storage engine** (e.g., B+ Tree, LSM-Tree, heap, columnar). See
-[`docs/storage-engine-fundamentals.md`](docs/storage-engine-fundamentals.md) for the
-underlying concepts (pages, buffer pool, WAL, ACID, read/write/space amplification,
-B-tree vs LSM vs columnar, and more).
+## Database vs. storage engine
 
----
+One thing worth being clear about, because the tool leans on it: a database and a storage engine aren't the same thing.
 
-## How it works
+A database (Postgres, MongoDB, MySQL) is the whole product. It handles connections, understands your queries, plans how to run them, deals with security, and so on. The storage engine is the layer underneath that actually decides how bytes get written to disk, indexed, cached, and kept safe after a crash. InnoDB, WiredTiger and RocksDB are storage engines, not databases.
 
-1. **`catalog.js`** — a structured catalog of 40 databases. Each entry has scored
-   attributes (workloads, data model, read/write profile, consistency, scaling,
-   deployment, SQL) plus metadata (license, release year, popularity, clouds) and a
-   trade-off note.
-2. **`app.js`** — a **weighted scoring engine**. Your form answers become weights; each
-   database is scored per criterion, ranked, and annotated with human-readable reasons.
-3. **`explore.js`** — renders the per-database property sheet and supports deep links
-   via `explore.html?db=<name>`.
-4. **`index.html` / `explore.html` / `style.css`** — the UI. Pure HTML/CSS/JS, **no
-   build step and no dependencies**.
+Most databases hide this from you entirely. But a few (MySQL, MariaDB, MongoDB, SQL Server) let you swap the engine depending on your workload. For those, the recommender goes a step further: it picks the engine that suits what you described and shows the full picture. Say your workload is write-heavy, and it'll suggest MySQL with the MyRocks engine instead of the default InnoDB, and tell you why. Databases that don't give you the choice just show their built-in engine.
 
-### Scoring model (summary)
+If you want to go deeper on the concepts, there's a writeup in [docs/storage-engine-fundamentals.md](docs/storage-engine-fundamentals.md) covering pages, buffer pools, write-ahead logs, B-trees vs LSM-trees, and the usual trade-offs.
 
-Each criterion contributes a weighted fraction of the total score:
+## How the matching works
 
-| Criterion | Weight |
-|---|---|
-| Workload | 30 |
-| Data model | 15 |
-| Consistency | 15 |
-| Scaling | 15 |
-| Read/write balance | 10 |
-| Deployment | 10 |
-| SQL | 10 |
+Everything lives in four small files:
 
-Criteria set to "No preference" are skipped and don't count against any database.
+- `catalog.js` holds the data. Each database is an object with its attributes (workload fit, data model, read/write lean, consistency, scaling, deployment, SQL support), some metadata like license and popularity, and a trade-off note. Pluggable databases also list their engine options here.
+- `app.js` does the scoring and renders the recommender. Your answers become weights, each database earns a fraction of each weight depending on how well it fits, and the totals get sorted.
+- `explore.js` renders the single-database property sheet and handles the `explore.html?db=Name` deep links.
+- `style.css` is the shared styling.
 
----
+The scoring is just a weighted sum. Workload fit matters most, then data model, consistency and scaling, with read/write balance, deployment and SQL counting for a bit less. Anything you leave on "No preference" is skipped so it doesn't count for or against anything.
 
-## Running locally
+## Running it
 
-No server or build is required — just open the file:
+Open `index.html` in a browser. That's it.
 
-```text
-Open index.html in any modern browser.
+If you'd rather serve it over HTTP (handy on some setups):
+
 ```
-
-Or, if you prefer serving over HTTP (optional):
-
-```powershell
-# Python 3
 python -m http.server 8000
-# then visit http://localhost:8000
 ```
 
----
+then go to http://localhost:8000.
 
-## Project structure
+## Files
 
-```text
-.
-├── index.html     # Recommender page (knobs + ranked results)
-├── explore.html   # Explorer page (per-database property sheet)
-├── catalog.js     # Structured catalog of 40 databases
-├── app.js         # Weighted scoring engine + results rendering
-├── explore.js     # Property-sheet rendering + deep links
-├── style.css      # Shared styling
-└── docs/
-    └── storage-engine-fundamentals.md   # Research: how storage engines work
+```
+index.html     recommender page
+explore.html   single-database explorer
+catalog.js     the 40-database catalog
+app.js         scoring + recommender rendering
+explore.js     explorer rendering + deep links
+style.css      styling
+docs/          background notes on storage engines
 ```
 
----
+## Adding a database
 
-## Extending the catalog
-
-To add a database, append an entry to `window.DB_CATALOG` in `catalog.js` using the
-attribute vocabulary documented at the top of that file. New entries automatically
-appear in **both** the recommender and the explorer. Keep the vocabulary values in sync
-with the label maps in `app.js` and `explore.js`.
-
----
-
-## Roadmap
-
-- [x] Weighted scoring recommender over a structured catalog
-- [x] Per-database explorer with full property sheets
-- [x] 40-database catalog with license/maturity/popularity/cloud metadata
-- [x] Trade-off notes and clickable results
-- [ ] Deploy to GitHub Pages
-- [ ] Search/filter in the explorer
-- [ ] "Compare top matches" side-by-side view
-- [ ] User-weighted priorities (choose which criteria matter most)
-- [ ] Move catalog to JSON + validation + tests
-
----
+Add an object to `DB_CATALOG` in `catalog.js`, following the format of the existing entries (the attribute values are listed in a comment at the top of the file). New entries show up in both pages automatically. If you use a workload or data-model value that doesn't exist yet, add a matching label in `app.js` and `explore.js` so it displays nicely.
 
 ## License
 
-Personal/educational project. See individual databases in the catalog for their own
-licenses.
+Personal project, built mostly to learn. The databases in the catalog each have their own licenses — check those if you're choosing one for real.
