@@ -1,4 +1,4 @@
-# Find the Right Database
+# DBAdvisor
 
 A lightweight, no-build web tool that helps you **choose the right database** for a
 project. Tweak a few knobs describing your requirements and get real-world databases
