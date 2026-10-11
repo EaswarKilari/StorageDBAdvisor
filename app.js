@@ -139,7 +139,56 @@ function readRequirements() {
   };
 }
 
-function render(results) {
+/* For pluggable databases, pick the storage engine that best fits the request. */
+function selectEngine(db, req) {
+  if (!db.engines || !db.engines.length) return null;
+
+  let want, reason;
+  if (req.workload === "olap") {
+    want = "analytics";
+    reason = "you chose an analytics (OLAP) workload";
+  } else if (req.workload === "cache") {
+    want = "cache";
+    reason = "you chose a caching workload";
+  } else if (req.rw >= 0.66) {
+    want = "write";
+    reason = "you chose a write-heavy workload";
+  } else if (req.rw <= 0.34) {
+    want = "read";
+    reason = "you chose a read-heavy workload";
+  } else {
+    want = "default";
+    reason = "it is the balanced general-purpose default";
+  }
+
+  let engine = db.engines.find(function (e) { return e.bestFor === want; });
+  if (!engine) {
+    engine = db.engines.find(function (e) { return e.bestFor === "default"; }) || db.engines[0];
+    reason = "it is the recommended default for your needs";
+  }
+  return { engine: engine, reason: reason };
+}
+
+function engineBlock(db, req) {
+  const baseName = db.name.replace(/\s*\([^)]*\)\s*$/, "");
+  const pick = selectEngine(db, req);
+  if (!pick) {
+    return '<div class="engine-pick">' +
+      '<div class="ep-row"><span class="ep-label">Database</span><span class="ep-val">' + baseName + '</span></div>' +
+      '<div class="ep-row"><span class="ep-label">Storage engine</span><span class="ep-val">' + db.structure + ' <em>(built-in, not configurable)</em></span></div>' +
+      '<div class="ep-row final"><span class="ep-label">Final product</span><span class="ep-val">' + baseName + '</span></div>' +
+      '</div>';
+  }
+  const e = pick.engine;
+  return '<div class="engine-pick">' +
+    '<div class="ep-row"><span class="ep-label">Database</span><span class="ep-val">' + baseName + ' <em>(pluggable engines)</em></span></div>' +
+    '<div class="ep-row"><span class="ep-label">Storage engine</span><span class="ep-val"><strong>' + e.name + '</strong> \u2014 ' + e.structure + '</span></div>' +
+    '<div class="ep-why">Chosen because ' + pick.reason + '. ' + e.note + '</div>' +
+    '<div class="ep-row final"><span class="ep-label">Final product</span><span class="ep-val">' + baseName + ' with the ' + e.name + ' engine</span></div>' +
+    '</div>';
+}
+
+function render(results, req) {
   const container = document.getElementById("results");
   container.innerHTML = "";
 
@@ -168,7 +217,8 @@ function render(results) {
         '<span class="meta-item">Since ' + db.released + '</span>' +
         '<span class="meta-item">Popularity: ' + db.popularity + '</span>' +
       '</div>' +
-      '<div class="tradeoff"><strong>Trade-off:</strong> ' + db.tradeoff + '</div>';
+      '<div class="tradeoff"><strong>Trade-off:</strong> ' + db.tradeoff + '</div>' +
+      engineBlock(db, req);
 
     const reasons = document.createElement("div");
     reasons.className = "reasons";
@@ -197,7 +247,7 @@ function recommend() {
       return { db: db, pct: s.pct, pros: s.pros, cons: s.cons };
     })
     .sort((a, b) => b.pct - a.pct);
-  render(results);
+  render(results, req);
 }
 
 if (typeof document !== "undefined") {
@@ -206,5 +256,5 @@ if (typeof document !== "undefined") {
     recommend(); // show an initial ranking with defaults
   });
 } else if (typeof module !== "undefined") {
-  module.exports = { scoreDb: scoreDb }; // exposed for headless testing
+  module.exports = { scoreDb: scoreDb, selectEngine: selectEngine }; // exposed for headless testing
 }

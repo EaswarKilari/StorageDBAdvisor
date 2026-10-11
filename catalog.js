@@ -36,7 +36,13 @@ window.DB_CATALOG = [
     license: "Open source (GPLv2)", released: 1995,
     popularity: "Very high", clouds: ["AWS", "Azure", "GCP", "Self-managed"],
     summary: "Popular, battle-tested relational OLTP engine with a vast ecosystem.",
-    tradeoff: "Ubiquitous and fast for simple reads, but historically weaker on complex queries and strict SQL standards than Postgres."
+    tradeoff: "Ubiquitous and fast for simple reads, but historically weaker on complex queries and strict SQL standards than Postgres.",
+    engines: [
+      { name: "InnoDB", structure: "B+ tree (ACID, MVCC, row locks)", bestFor: "default", note: "The balanced default: full transactions and foreign keys for general OLTP." },
+      { name: "MyRocks", structure: "LSM tree", bestFor: "write", note: "Write-optimized and space-efficient for very large, write-heavy datasets." },
+      { name: "MyISAM", structure: "B-tree (table locks, no transactions)", bestFor: "read", note: "Legacy read-mostly engine; fast but no ACID or row locking." },
+      { name: "MEMORY", structure: "In-memory hash", bestFor: "cache", note: "Ultra-fast volatile tables for scratch/temporary data." }
+    ]
   },
   {
     name: "Oracle Database",
@@ -58,7 +64,12 @@ window.DB_CATALOG = [
     license: "Proprietary", released: 1989,
     popularity: "High", clouds: ["Azure", "AWS", "Self-managed"],
     summary: "Enterprise OLTP with built-in columnstore for mixed (HTAP) workloads.",
-    tradeoff: "Excellent tooling and HTAP support, but licensing cost and a Windows-centric heritage."
+    tradeoff: "Excellent tooling and HTAP support, but licensing cost and a Windows-centric heritage.",
+    engines: [
+      { name: "Rowstore (B-tree)", structure: "B-tree", bestFor: "default", note: "Standard disk-based OLTP tables." },
+      { name: "Columnstore", structure: "Columnar", bestFor: "analytics", note: "Column-oriented indexes for analytics and HTAP." },
+      { name: "In-Memory OLTP (Hekaton)", structure: "In-memory (lock-free)", bestFor: "cache", note: "Memory-optimized tables for very high-throughput transactional hotspots." }
+    ]
   },
   {
     name: "SQLite",
@@ -157,7 +168,11 @@ window.DB_CATALOG = [
     license: "Source-available (SSPL)", released: 2009,
     popularity: "Very high", clouds: ["AWS", "Azure", "GCP", "Self-managed"],
     summary: "Document database with flexible schema, compression, and sharding for horizontal scale.",
-    tradeoff: "Flexible schema and easy scaling, but denormalized modeling discipline is required and the SSPL license limits some uses."
+    tradeoff: "Flexible schema and easy scaling, but denormalized modeling discipline is required and the SSPL license limits some uses.",
+    engines: [
+      { name: "WiredTiger (B-tree)", structure: "B-tree", bestFor: "default", note: "The default: balanced read/write with compression and document-level concurrency." },
+      { name: "WiredTiger (LSM)", structure: "LSM tree", bestFor: "write", note: "Configurable LSM mode for sustained write-heavy ingestion." }
+    ]
   },
   {
     name: "Elasticsearch",
@@ -245,7 +260,13 @@ window.DB_CATALOG = [
     license: "Open source (GPLv2)", released: 2009,
     popularity: "High", clouds: ["AWS", "Azure", "GCP", "Self-managed"],
     summary: "Community-driven MySQL fork with extra storage engines and drop-in compatibility.",
-    tradeoff: "Open MySQL fork with more engines, but compatibility is gradually diverging from MySQL."
+    tradeoff: "Open MySQL fork with more engines, but compatibility is gradually diverging from MySQL.",
+    engines: [
+      { name: "InnoDB", structure: "B+ tree (ACID, MVCC)", bestFor: "default", note: "General-purpose transactional default." },
+      { name: "MyRocks", structure: "LSM tree", bestFor: "write", note: "Write-optimized and space-efficient for large write-heavy datasets." },
+      { name: "ColumnStore", structure: "Columnar", bestFor: "analytics", note: "Column-oriented engine for OLAP/analytics queries." },
+      { name: "Aria", structure: "B-tree (crash-safe)", bestFor: "read", note: "Crash-safe, read-mostly engine (non-transactional)." }
+    ]
   },
   {
     name: "Amazon Aurora",

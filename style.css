@@ -246,6 +246,43 @@ a.name:hover { color: var(--accent); text-decoration: underline; }
 
 .tradeoff-inline { color: var(--text); }
 
+.engine-pick {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.ep-row {
+  display: flex;
+  gap: 10px;
+  padding: 3px 0;
+  font-size: 13px;
+}
+.ep-label {
+  flex: 0 0 110px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.ep-val { color: var(--text); }
+.ep-val em { color: var(--muted); font-style: italic; }
+.ep-row.final {
+  margin-top: 4px;
+  padding-top: 7px;
+  border-top: 1px solid var(--border);
+}
+.ep-row.final .ep-val { color: var(--great); font-weight: 600; }
+.ep-why {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 2px 0 4px 120px;
+  line-height: 1.4;
+}
+@media (max-width: 520px) {
+  .ep-row { flex-direction: column; gap: 1px; }
+  .ep-why { margin-left: 0; }
+}
+
 .reasons {
   display: flex;
   flex-wrap: wrap;

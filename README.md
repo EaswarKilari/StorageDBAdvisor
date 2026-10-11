@@ -19,6 +19,12 @@ property sheet.
   property sheet: storage structure, best-fit workloads, data model(s), read/write
   profile, consistency, scaling, deployment options, SQL support, license, release
   year, popularity, cloud availability, and the key trade-off.
+- **Database → storage engine → final product** — for *pluggable* databases
+  (MySQL, MariaDB, MongoDB, SQL Server), the recommender picks the best **storage
+  engine** for your workload (e.g., write-heavy → MyRocks) and shows the full
+  breakdown: the database, the chosen engine and why, and the final product
+  (e.g., "MySQL with the MyRocks engine"). Non-pluggable databases are shown with
+  their built-in, fixed engine.
 - **Clickable results** — each recommended database links straight to its property
   sheet in the Explorer.
 - **Plain-language explanations** — every question and option has a "What do these

@@ -83,7 +83,14 @@ function renderDb(db) {
     row("First released", String(db.released) + " (" + (new Date().getFullYear() - db.released) + " years ago)") +
     row("Popularity", db.popularity) +
     row("Managed / availability", db.clouds.join(", ")) +
+    (db.engines ? row("Pluggable storage engines", enginesList(db.engines)) : "") +
     row("Key trade-off", '<span class="tradeoff-inline">' + db.tradeoff + '</span>');
+}
+
+function enginesList(engines) {
+  return '<ul class="prop-list">' + engines.map(function (e) {
+    return "<li><strong>" + e.name + "</strong> \u2014 " + e.structure + ". " + e.note + "</li>";
+  }).join("") + "</ul>";
 }
 
 function selectAndRender(name) {
